@@ -10,8 +10,10 @@ use Livewire\Component;
 use Rappasoft\LaravelLivewireTables\Traits\WithBulkActions;
 use Rappasoft\LaravelLivewireTables\Traits\WithCustomPagination;
 use Rappasoft\LaravelLivewireTables\Traits\WithFilters;
+use Rappasoft\LaravelLivewireTables\Traits\WithMultiSelectFilter;
 use Rappasoft\LaravelLivewireTables\Traits\WithPerPagePagination;
 use Rappasoft\LaravelLivewireTables\Traits\WithSearch;
+use Rappasoft\LaravelLivewireTables\Traits\WithSelectFilter;
 use Rappasoft\LaravelLivewireTables\Traits\WithSorting;
 
 /**
@@ -27,13 +29,8 @@ abstract class DataTableComponent extends Component
     use WithPerPagePagination;
     use WithSearch;
     use WithSorting;
-
-    /**
-     * The default pagination theme.
-     *
-     * @var string
-     */
-    public $paginationTheme = 'tailwind';
+    use WithMultiSelectFilter;
+    use WithSelectFilter;
 
     /**
      * Whether or not to refresh the table at a certain interval
@@ -113,12 +110,6 @@ abstract class DataTableComponent extends Component
     {
         parent::__construct($id);
 
-        $theme = config('livewire-tables.theme');
-
-        if ($theme === 'bootstrap-4' || $theme === 'bootstrap-5') {
-            $this->paginationTheme = 'bootstrap';
-        }
-
         $this->filters = array_merge($this->filters, $this->baseFilters);
     }
 
@@ -129,7 +120,7 @@ abstract class DataTableComponent extends Component
      */
     public function rowsQuery()
     {
-        $this->cleanFilters();
+        $this->allowFiltersValues();
 
         $query = $this->query();
 
@@ -144,6 +135,8 @@ abstract class DataTableComponent extends Component
         return $query;
     }
 
+    public bool $paginateCollection = false;
+
     /**
      * Get the rows paginated collection that will be returned to the view.
      *
@@ -151,7 +144,9 @@ abstract class DataTableComponent extends Component
      */
     public function getRowsProperty()
     {
-        if ($this->paginationEnabled) {
+        $collection = collect();
+
+        if ($this->paginationEnabled && !$this->paginateCollection) {
             return $this->applyPagination($this->rowsQuery());
         }
 
@@ -177,7 +172,7 @@ abstract class DataTableComponent extends Component
      */
     public function rowView(): string
     {
-        return 'livewire-tables::'.config('livewire-tables.theme').'.components.table.row-columns';
+        return 'livewire-tables::components.table.row-columns';
     }
 
     /**
@@ -185,7 +180,7 @@ abstract class DataTableComponent extends Component
      */
     public function render()
     {
-        return view('livewire-tables::'.config('livewire-tables.theme').'.datatable')
+        return view('livewire-tables::datatable')
             ->with([
                 'columns' => $this->columns(),
                 'rowView' => $this->rowView(),
@@ -198,7 +193,7 @@ abstract class DataTableComponent extends Component
     /**
      * Get a column object by its field
      *
-     * @param  string  $column
+     * @param string $column
      *
      * @return mixed
      */

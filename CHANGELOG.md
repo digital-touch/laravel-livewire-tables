@@ -67,8 +67,8 @@ All notable changes to `laravel-livewire-tables` will be documented in this file
 
 - Modified views to support localization better where necessary (republish views).
 - Alphabetize en.json
-- Fixed bulk actions using wrong key to select instead of $primaryKey
-- Make bulk select checkbox use primary key
+- Fixed bulk actions using wrong filterName to select instead of $primaryKey
+- Make bulk select checkbox use primary filterName
 
 ## [1.3.1] - 2021-04-26
 
@@ -114,7 +114,7 @@ All notable changes to `laravel-livewire-tables` will be documented in this file
 
 - Ability to disable pagination (https://github.com/rappasoft/laravel-livewire-tables/pull/222)
 - Ability to define the sorting direction names for each column. i.e. A-Z, Z-A, Yes, No, Enabled, Disabled, etc.
-- Added ability to define primary key of rows for bulk select
+- Added ability to define primary filterName of rows for bulk select
 - Added selectedKeys property that returns an array of the ids of the selected rows
 
 ### Changed

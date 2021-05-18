@@ -5,7 +5,7 @@ namespace Rappasoft\LaravelLivewireTables\Tests\Http\Livewire;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Tests\Models\Pet;
-use Rappasoft\LaravelLivewireTables\Views\Column;
+use Rappasoft\LaravelLivewireTables\Columns\Column;
 
 class PetsAltQueryTable extends DataTableComponent
 {
