@@ -21,13 +21,6 @@ trait WithFilters
     public array $filters = [];
 
     /**
-     * Map filter names
-     *
-     * @var array
-     */
-    public array $filterNames = [];
-
-    /**
      * Default filters
      *
      * @var array|null[]
@@ -83,6 +76,11 @@ trait WithFilters
         return [];
     }
 
+    public function filter($id): Filter
+    {
+        return $this->filters()[$id];
+    }
+
     /**
      * Removes any filters that are empty
      */
@@ -99,14 +97,15 @@ trait WithFilters
      * Cleans $filter property of any values that don't exist
      * in the filter() definition.
      */
-    public function allowFiltersValues(): void
+    public function purgeFiltersValues(): void
     {
         // Filter $filters values
-        $this->filters = collect($this->filters)->filter(function ($filterValue, $filterName) {
+        $this->filters = collect($this->filters)->filter(function ($filterValue, $filterId) {
+
             $filterDefinitions = $this->filters();
 
             // Filter out any keys that weren't defined as a filter
-            if (!isset($filterDefinitions[$filterName])) {
+            if (!isset($filterDefinitions[$filterId])) {
                 return false;
             }
 
@@ -115,7 +114,7 @@ trait WithFilters
                 return true;
             }
 
-            $filter = $filterDefinitions[$filterName];
+            $filter = $filterDefinitions[$filterId];
 
             return $filter->allowedValue($filterValue);
         })->toArray();
@@ -134,37 +133,38 @@ trait WithFilters
     /**
      * Check if a filter exists and isn't null
      *
-     * @param string $filterName
+     * @param string $filterId
      *
      * @return bool
      */
-    public function hasFilter(string $filterName): bool
+    public function hasFilter(string $filterId): bool
     {
-        return isset($this->filters[$filterName])
-            && $this->filters[$filterName] !== null
+        return isset($this->filters[$filterId])
+            && $this->filters[$filterId] !== null
             && (
-                (is_string($this->filters[$filterName]) && $this->filters[$filterName] !== '')
-                || (is_array($this->filters[$filterName]) && count($this->filters[$filterName]))
+                (is_string($this->filters[$filterId]) && $this->filters[$filterId] !== '')
+                || (is_array($this->filters[$filterId]) && count($this->filters[$filterId]))
             );
     }
 
     /**
      * Get the value of a given filter
      *
-     * @param string $filterName
+     * @param string $filterId
      *
-     * @return int|string|null
+     * @return null|int|string|array
      */
-    public function getFilter(string $filterName)
+    public function getFilter(string $filterId)
     {
-        if (!$this->hasFilter($filterName)) {
+        if (!$this->hasFilter($filterId)) {
             return null;
         }
-        if (!in_array($filterName, collect($this->filters())->keys()->toArray(), true)) {
+
+        if (!in_array($filterId, collect($this->filters())->keys()->toArray(), true)) {
             return null;
         }
-        $filter = $this->filters()[$filterName];
-        return $filter->processValue($this->filters[$filterName]);
+
+        return $this->filters[$filterId];
     }
 
     /**
@@ -190,12 +190,20 @@ trait WithFilters
     /**
      * Set a given filter to null
      *
-     * @param $filter
+     * @param $filterId
      */
-    public function removeFilter($filter): void
+    public function removeFilter($filterId, $value = null): void
     {
-        if (isset($this->filters[$filter])) {
-            $this->filters[$filter] = null;
+        if (isset($this->filters[$filterId])) {
+
+            if (is_array($this->filters[$filterId])) {
+                $index = array_search($value, $this->filters[$filterId]);
+                if ($index !== false) {
+                    array_splice($this->filters[$filterId], $index, 1);
+                }
+            } else {
+                $this->filters[$filterId] = null;
+            }
         }
     }
 

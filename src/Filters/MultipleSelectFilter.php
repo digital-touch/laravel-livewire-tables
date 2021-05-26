@@ -4,6 +4,11 @@ namespace Rappasoft\LaravelLivewireTables\Filters;
 
 class MultipleSelectFilter extends Filter
 {
+    public string $optionLabel = 'label';
+    public string $optionValue = 'value';
+
+    public string $width = "w-96";
+
     /**
      * @var array
      */

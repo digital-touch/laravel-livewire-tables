@@ -2,18 +2,18 @@
 
 namespace Rappasoft\LaravelLivewireTables;
 
+use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 use Rappasoft\LaravelLivewireTables\Traits\WithBulkActions;
 use Rappasoft\LaravelLivewireTables\Traits\WithCustomPagination;
 use Rappasoft\LaravelLivewireTables\Traits\WithFilters;
-use Rappasoft\LaravelLivewireTables\Traits\WithMultiSelectFilter;
 use Rappasoft\LaravelLivewireTables\Traits\WithPerPagePagination;
 use Rappasoft\LaravelLivewireTables\Traits\WithSearch;
-use Rappasoft\LaravelLivewireTables\Traits\WithSelectFilter;
 use Rappasoft\LaravelLivewireTables\Traits\WithSorting;
 
 /**
@@ -29,8 +29,6 @@ abstract class DataTableComponent extends Component
     use WithPerPagePagination;
     use WithSearch;
     use WithSorting;
-    use WithMultiSelectFilter;
-    use WithSelectFilter;
 
     /**
      * Whether or not to refresh the table at a certain interval
@@ -113,6 +111,11 @@ abstract class DataTableComponent extends Component
         $this->filters = array_merge($this->filters, $this->baseFilters);
     }
 
+    public function collection(): ?Collection
+    {
+        return collect();
+    }
+
     /**
      * Get the rows query builder with sorting applied.
      *
@@ -120,22 +123,22 @@ abstract class DataTableComponent extends Component
      */
     public function rowsQuery()
     {
-        $this->allowFiltersValues();
+        $this->purgeFiltersValues();
 
         $query = $this->query();
 
-        if (method_exists($this, 'applySorting')) {
-            $query = $this->applySorting($query);
-        }
+        if ($query) {
+            if (method_exists($this, 'applySorting')) {
+                $query = $this->applySorting($query);
+            }
 
-        if (method_exists($this, 'applySearchFilter')) {
-            $query = $this->applySearchFilter($query);
+            if (method_exists($this, 'applySearchFilter')) {
+                $query = $this->applySearchFilter($query);
+            }
         }
 
         return $query;
     }
-
-    public bool $paginateCollection = false;
 
     /**
      * Get the rows paginated collection that will be returned to the view.
@@ -144,13 +147,21 @@ abstract class DataTableComponent extends Component
      */
     public function getRowsProperty()
     {
-        $collection = collect();
+        $query = $this->rowsQuery();
 
-        if ($this->paginationEnabled && !$this->paginateCollection) {
-            return $this->applyPagination($this->rowsQuery());
+        if ($query) {
+            if ($this->paginationEnabled) {
+                return $this->applyPagination($query);
+            } else {
+                return $query->get();
+            }
+        } else {
+            if ($this->paginationEnabled) {
+                return $this->paginateCollection($this->collection());
+            } else {
+                return $this->collection();
+            }
         }
-
-        return $this->rowsQuery()->get();
     }
 
     /**
@@ -202,5 +213,57 @@ abstract class DataTableComponent extends Component
         return collect($this->columns())
             ->where('column', $column)
             ->first();
+    }
+
+    public function getKey($row)
+    {
+        return $row->getKey();
+    }
+
+    public function paginateCollection(Collection $results, $perPage = 15, $columns = [], $pageName = 'page', $page = null): LengthAwarePaginator
+    {
+        $page = $page ?: Paginator::resolveCurrentPage($pageName);
+
+        $total = $results->count();
+
+        if (count($columns)) {
+            $results = $total ? $this->forPage($results, $page, $perPage)->only($columns) : collect();
+        } else {
+            $results = $total ? $this->forPage($results, $page, $perPage) : collect();
+        }
+
+        return $this->collectionPaginator($results, $total, $perPage, $page, [
+            'path' => Paginator::resolveCurrentPath(),
+            'pageName' => $pageName,
+        ]);
+    }
+
+    /**
+     * Set the limit and offset for a given page.
+     *
+     * @param int $page
+     * @param int $perPage
+     * @return Collection
+     */
+    public static function forPage(Collection $results, int $page, int $perPage = 15): Collection
+    {
+        return $results->skip(($page - 1) * $perPage)->take($perPage);
+    }
+
+    /**
+     * Create a new length-aware paginator instance.
+     *
+     * @param \Illuminate\Support\Collection $items
+     * @param int $total
+     * @param int $perPage
+     * @param int $currentPage
+     * @param array $options
+     * @return \Illuminate\Pagination\LengthAwarePaginator
+     */
+    protected static function collectionPaginator($items, $total, $perPage, $currentPage, $options)
+    {
+        return Container::getInstance()->makeWith(LengthAwarePaginator::class, compact(
+            'items', 'total', 'perPage', 'currentPage', 'options'
+        ));
     }
 }

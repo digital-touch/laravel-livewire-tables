@@ -7,6 +7,8 @@ namespace Rappasoft\LaravelLivewireTables\Filters;
  */
 abstract class Filter
 {
+    public string $width = "w-56";
+
     /**
      * @var string
      */
@@ -20,7 +22,7 @@ abstract class Filter
     /**
      * @var string
      */
-    public string $name;
+    public string $label;
 
     /**
      * @var string
@@ -39,23 +41,23 @@ abstract class Filter
      */
     public function __construct(string $name, string $component, string $type)
     {
-        $this->name = $name;
+        $this->label = $name;
         $this->component = $component;
         $this->type = $type;
     }
 
-    public function setName(string $name): Filter
+    public function setLabel(string $label): Filter
     {
-        $this->name = $name;
+        $this->label = $label;
         return $this;
     }
 
     /**
      * @return string
      */
-    public function name(): string
+    public function label(): string
     {
-        return $this->name;
+        return $this->label;
     }
 
     public function setType(string $type): Filter
@@ -106,11 +108,15 @@ abstract class Filter
      * @param $raw
      * @return string|array|null
      */
-    public abstract function processValue($raw);
+    public abstract function allowedValue($raw): bool;
 
-    /**
-     * @param $raw
-     * @return string|array|null
-     */
-    public abstract function allowedValue($raw):bool;
+    public function getOptionLabel($value)
+    {
+        return $value;
+    }
+
+    public function formatPill($value): string
+    {
+        return ucwords(strtr($value, ['_' => ' ', '-' => ' ']));
+    }
 }

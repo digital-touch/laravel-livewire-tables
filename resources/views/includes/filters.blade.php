@@ -1,6 +1,6 @@
 @if ($filtersView || count($customFilters))
 
-    <x-dropdown id="filters_dropdown" align="right" width="48">
+    {{--<x-dropdown id="filters_dropdown" align="right" width="84" persistent="true">
         <x-slot name="trigger">
             <button
                 class="flex items-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:border-indigo-300 focus:shadow-outline-indigo">
@@ -20,43 +20,29 @@
                     </svg>
                 </div>
             </button>
-        </x-slot>
+        </x-slot>--}}
 
-        <x-slot name="content">
-            @if ($filtersView)
-                @include($filtersView)
-            @endif
 
-            @if (count($customFilters))
-                @foreach ($customFilters as $filterName => $filter)
-                    <div class="py-1" role="none">
-                        <div class="block px-4 py-2 text-sm text-gray-700" role="menuitem">
-                            {{--@component($filter->component(),['filterName'=>$filterName,'filter'=>$filter])--}}
-                            @php($selected = $this->hasFilter($filterName) ? $filters[$filterName]:null)
-                            @include($filter->component())
-                            {{--<x-dynamic-component :component="$filter->component()" :filterName="$filterName"
-                                                 :selected="$this->hasFilter($filterName) ? $filters[$filterName]:null"
-                                                 :filter="$filter"></x-dynamic-component>--}}
-                        </div>
-                    </div>
-                @endforeach
-            @endif
+    @if ($filtersView)
+        @include($filtersView)
+    @endif
 
-            @if (count(array_filter($filters)) && !(count(array_filter($filters)) === 1 && isset($filters['search'])))
-                <div class="py-1" role="none">
-                    <div class="block px-4 py-2 text-sm text-gray-700" role="menuitem">
-                        <button
-                            wire:click.prevent="resetFilters"
-                            type="button"
-                            class="w-full inline-flex items-center justify-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        >
-                            @lang('Clear')
-                        </button>
-                    </div>
-                </div>
-            @endif
-        </x-slot>
-    </x-dropdown>
+    @if (count($customFilters))
+        @foreach ($customFilters as $filterId => $filter)
+            <div class="block text-sm text-gray-700 {{$filter->width}}">
+                {{--@php($selected = $this->hasFilter($filterId) ? $filters[$filterId]:null)--}}
+                @include($filter->component())
+            </div>
+        @endforeach
+    @endif
+
+    @if (count(array_filter($filters)) && !(count(array_filter($filters)) === 1 && isset($filters['search'])))
+        <x-button wire:click.prevent="resetFilters" type="button">
+            @lang('Clear')
+        </x-button>
+    @endif
+
+    {{--    </x-dropdown>--}}
 
     {{--<div
         x-data="{ open: false }"

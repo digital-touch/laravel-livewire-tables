@@ -1,7 +1,8 @@
 <x-livewire-tables::table.table>
+
     <x-slot name="head">
         @if (count($bulkActions))
-            <x-livewire-tables::table.heading>
+            <x-livewire-tables::table.heading class="w-8">
                 <div class="flex rounded-md shadow-sm">
                     <input
                         wire:model="selectPage"
@@ -63,7 +64,7 @@
         @forelse ($rows as $index => $row)
             <x-livewire-tables::table.row
                 wire:loading.class.delay="opacity-50"
-                wire:key="table-row-{{ $row->getKey() }}"
+                wire:key="table-row-{{ $this->getKey($row) }}"
                 :url="method_exists($this, 'getTableRowUrl') ? $this->getTableRowUrl($row) : null"
                 :class="$index % 2 === 0 ? 'bg-white' . (method_exists($this, 'getTableRowUrl') ? ' hover:bg-gray-100' : '') : 'bg-gray-50' . (method_exists($this, 'getTableRowUrl') ? ' hover:bg-gray-100' : '')"
             >
@@ -72,7 +73,7 @@
                         <div class="flex rounded-md shadow-sm">
                             <input
                                 wire:model="selected"
-                                value="{{ $row->getKey() }}"
+                                value="{{ $this->getKey($row) }}"
                                 type="checkbox"
                                 class="rounded-md shadow-sm border-cool-gray-300 block transition duration-150 ease-in-out sm:text-sm sm:leading-5"
                             />
