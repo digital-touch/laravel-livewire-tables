@@ -1,4 +1,4 @@
-@if ($rows->hasMorePages())
+@if ($paginationEnabled && $rows->hasMorePages())
 
     <div class="overflow-hidden h-0.5 text-xs flex rounded bg-opacity-20 bg-indigo-200">
         <div style="width:{{($rows->currentPage() / $rows->lastPage()) * 100}}%"
