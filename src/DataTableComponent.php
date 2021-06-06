@@ -20,6 +20,7 @@ use Rappasoft\LaravelLivewireTables\Traits\WithSorting;
  * Class TableComponent.
  *
  * @property LengthAwarePaginator|Collection|null $rows
+ * @property Collection|null $summaryRows
  */
 abstract class DataTableComponent extends Component
 {
@@ -140,6 +141,11 @@ abstract class DataTableComponent extends Component
         return $query;
     }
 
+    public function getSummaryRowsProperty(): Collection
+    {
+        return collect();
+    }
+
     /**
      * Get the rows paginated collection that will be returned to the view.
      *
@@ -198,6 +204,7 @@ abstract class DataTableComponent extends Component
                 'filtersView' => $this->filtersView(),
                 'customFilters' => $this->filters(),
                 'rows' => $this->rows,
+                'summaryRows' => $this->summaryRows,
             ]);
     }
 

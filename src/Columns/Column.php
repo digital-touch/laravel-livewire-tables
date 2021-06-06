@@ -42,7 +42,12 @@ class Column
     /**
      * @var string|null
      */
-    public ?string $class = null;
+    public ?string $classes = null;
+
+    /**
+     * @var string|null
+     */
+    public ?string $width = null;
 
     /**
      * @var bool
@@ -74,13 +79,13 @@ class Column
     {
         $this->text = $text;
 
-        if (! $column && $text) {
+        if (!$column && $text) {
             $this->column = Str::snake($text);
         } else {
             $this->column = $column;
         }
 
-        if (! $this->column && ! $this->text) {
+        if (!$this->column && !$this->text) {
             $this->blank = true;
         }
     }
@@ -110,6 +115,12 @@ class Column
     public function isSortable(): bool
     {
         return $this->sortable === true;
+    }
+
+    public function setSearchable(bool $value = true): self
+    {
+        $this->searchable = $value;
+        return $this;
     }
 
     /**
@@ -154,15 +165,43 @@ class Column
     }
 
     /**
+     * @param string $classes
+     *
+     * @return $this
+     */
+    public function setClasses(string $classes): self
+    {
+        $this->classes = $classes;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function classes(): ?string
+    {
+        return $this->classes;
+    }
+
+    /**
      * @param string $class
      *
      * @return $this
      */
-    public function addClass(string $class): self
+    public function setWidth(string $class): self
     {
-        $this->class = $class;
+        $this->width = $class;
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function width(): ?string
+    {
+        return $this->width;
     }
 
     /**
@@ -173,14 +212,6 @@ class Column
         $this->asHtml = true;
 
         return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function class(): ?string
-    {
-        return $this->class;
     }
 
     /**
@@ -200,7 +231,7 @@ class Column
     }
 
     /**
-     * @param  callable  $callable
+     * @param callable $callable
      *
      * @return $this
      */
@@ -213,7 +244,7 @@ class Column
 
     /**
      * @param $row
-     * @param  null  $column
+     * @param null $column
      *
      * @return array|mixed|null
      */

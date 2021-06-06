@@ -22,7 +22,8 @@
                     :column="$column->column()"
                     :direction="$column->column() ? $sorts[$column->column()] ?? null : null"
                     :text="$column->text() ?? ''"
-                    :class="$column->class() ?? ''"
+                    :class="$column->classes() ?? ''"
+                    :width="$column->width() ?? ''"
                 />
             @endif
         @endforeach
@@ -81,7 +82,7 @@
                     </x-livewire-tables::table.cell>
                 @endif
 
-                <x-dynamic-component :component="$rowView" :row="$row"/>
+                <x-dynamic-component :component="$rowView" :row="$row" :index="$index" :rows="$rows"/>
 
             </x-livewire-tables::table.row>
         @empty
@@ -99,6 +100,16 @@
                     </div>
                 </x-livewire-tables::table.cell>
             </x-livewire-tables::table.row>
+        @endforelse
+        @forelse ($summaryRows as $index => $summaryRow)
+            <x-livewire-tables::table.row
+                wire:key="table-summary-row-{{ $this->getKey($summaryRow) }}"
+                :class="$index % 2 === 0 ? 'bg-gray-200' : 'bg-gray-300'"
+            >
+                <x-dynamic-component :component="$rowView" :row="$summaryRow" :index="$index"/>
+
+            </x-livewire-tables::table.row>
+        @empty
         @endforelse
     </x-slot>
 </x-livewire-tables::table.table>
