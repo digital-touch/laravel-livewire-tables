@@ -21,15 +21,6 @@ trait WithFilters
     public array $filters = [];
 
     /**
-     * Default filters
-     *
-     * @var array|null[]
-     */
-    public array $baseFilters = [
-        'search' => null,
-    ];
-
-    /**
      * Prebuild the $filters array
      */
     public function mountWithFilters(): void
@@ -42,11 +33,7 @@ trait WithFilters
      */
     public function resetFilters(): void
     {
-        $search = $this->filters['search'] ?? null;
-
         $this->reset('filters');
-
-        $this->filters['search'] = $search;
     }
 
     /**
@@ -54,11 +41,6 @@ trait WithFilters
      */
     public function updatedFilters(): void
     {
-        // Remove the search filter when it's empty
-        if (isset($this->filters['search']) && $this->filters['search'] === '') {
-            $this->resetSearch();
-        }
-
         // Remove any url params that are empty
         $this->checkFilters();
 
@@ -180,12 +162,6 @@ trait WithFilters
     /**
      * @return array
      */
-    public function getFiltersWithoutSearch(): array
-    {
-        return collect($this->getFilters())
-            ->reject(fn($_value, $key) => $key === 'search')
-            ->toArray();
-    }
 
     /**
      * Set a given filter to null
@@ -205,68 +181,5 @@ trait WithFilters
                 $this->filters[$filterId] = null;
             }
         }
-    }
-
-    /**
-     * Collects columns with $searchable = true
-     *
-     * @return Column[]
-     */
-    public function getSearchableColumns(): array
-    {
-        return array_filter($this->columns(), fn(Column $column) => $column->isSearchable());
-    }
-
-    /**
-     * Apply Search Filter
-     *
-     * @param Builder|Relation $query
-     * @return Builder|Relation
-     */
-    public function applySearchFilter($query)
-    {
-        $searchableColumns = $this->getSearchableColumns();
-
-        if ($this->hasFilter('search') && count($searchableColumns)) {
-            $search = $this->getFilter('search');
-
-            // Group search conditions together
-            $query->where(function (Builder $subQuery) use ($search, $query, $searchableColumns) {
-                foreach ($searchableColumns as $column) {
-                    // Does this column have an alias or relation?
-                    $hasRelation = ColumnUtilities::hasRelation($column->column());
-
-                    // Let's try to map this column to a selected column
-                    $selectedColumn = ColumnUtilities::mapToSelected($column->column(), $query);
-
-                    // If the column has a search callback, just use that
-                    if ($column->hasSearchCallback()) {
-                        // Call the callback
-                        ($column->getSearchCallback())($subQuery, $search);
-                    } elseif (!$hasRelation || $selectedColumn) { // If the column isn't a relation or if it was previously selected
-                        $whereColumn = $selectedColumn ?? $column->column();
-
-                        // TODO: Skip Aggregates
-                        if (!$hasRelation) {
-                            $whereColumn = $query->getModel()->getTable() . '.' . $whereColumn;
-                        }
-
-                        // We can use a simple where clause
-                        $subQuery->orWhere($whereColumn, 'like', '%' . $search . '%');
-                    } else {
-                        // Parse the column
-                        $relationName = ColumnUtilities::parseRelation($column->column());
-                        $fieldName = ColumnUtilities::parseField($column->column());
-
-                        // We use whereHas which can work with unselected relations
-                        $subQuery->orWhereHas($relationName, function (Builder $hasQuery) use ($fieldName, $search) {
-                            $hasQuery->where($fieldName, 'like', '%' . $search . '%');
-                        });
-                    }
-                }
-            });
-        }
-
-        return $query;
     }
 }

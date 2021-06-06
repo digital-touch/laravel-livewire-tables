@@ -28,7 +28,6 @@ abstract class DataTableComponent extends Component
     use WithCustomPagination;
     use WithFilters;
     use WithPerPagePagination;
-    use WithSearch;
     use WithSorting;
 
     /**
@@ -108,8 +107,6 @@ abstract class DataTableComponent extends Component
     public function __construct($id = null)
     {
         parent::__construct($id);
-
-        $this->filters = array_merge($this->filters, $this->baseFilters);
     }
 
     public function collection(): ?Collection

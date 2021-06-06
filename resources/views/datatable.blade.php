@@ -18,10 +18,9 @@
                 @include('livewire-tables::includes.filter-pills')
 
                 <div class="md:flex md:justify-between p-4 md:p-0 items-end space-x-4">
-                    {{--<div class="w-full mb-4 md:mb-0 md:w-2/4 md:flex space-y-4 md:space-y-0 md:space-x-4">--}}
-                    @include('livewire-tables::includes.search')
                     @include('livewire-tables::includes.filters')
                     @isset($toolsView)
+                        <div class="flex-1"></div>
                         @include($toolsView)
                     @endisset
                     <div class="flex-1"></div>

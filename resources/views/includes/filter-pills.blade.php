@@ -1,4 +1,4 @@
-@if ($showFilters && count(array_filter($filters)) && !(count(array_filter($filters)) === 1 && isset($filters['search'])))
+@if ($showFilters && array_filter($filters))
 
     <div wire:key="filter-badges" class="p-4 md:p-0">
 
@@ -6,11 +6,7 @@
 
         @foreach($filters as $filterId => $filterValue)
 
-            @if($filterId === 'search')
-
-                @continue
-
-            @elseif (is_string($filterValue) && strlen($filterValue))
+            @if (is_string($filterValue) && strlen($filterValue))
 
                 @include('livewire-tables::includes.pill')
 
@@ -23,6 +19,7 @@
                 @endforeach
 
             @endif
+
         @endforeach
 
         <button class="focus:outline-none active:outline-none" wire:click.prevent="resetFilters"
