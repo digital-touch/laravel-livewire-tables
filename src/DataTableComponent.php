@@ -207,6 +207,7 @@ abstract class DataTableComponent extends Component
                 'customFilters' => $this->filters(),
                 'rows' => $this->rows,
                 'summaryRows' => $this->summaryRows,
+                'summaryRowView' => $this->summaryRowView(),
             ]);
     }
 

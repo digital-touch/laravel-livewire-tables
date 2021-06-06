@@ -103,7 +103,7 @@
         @endforelse
         @forelse ($summaryRows as $index => $summaryRow)
             <x-livewire-tables::table.row
-                wire:key="table-summary-row-{{ $this->getKey($summaryRow) }}"
+                wire:key="table-summary-row-{{ $this->getSummaryKey($summaryRow) }}"
                 :class="$index % 2 === 0 ? 'bg-gray-200' : 'bg-gray-300'"
             >
                 <x-dynamic-component :component="$summaryRowView" :row="$summaryRow" :index="$index"/>
