@@ -189,6 +189,11 @@ abstract class DataTableComponent extends Component
         return 'livewire-tables::components.table.row-columns';
     }
 
+    public function summaryRowView(): string
+    {
+        return 'livewire-tables::components.table.row-columns';
+    }
+
     /**
      * @return mixed
      */
@@ -222,6 +227,11 @@ abstract class DataTableComponent extends Component
     public function getKey($row)
     {
         return $row->getKey();
+    }
+
+    public function getSummaryKey($summaryRow)
+    {
+        return $summaryRow->getKey();
     }
 
     public function paginateCollection(Collection $results, $perPage = 15, $columns = [], $pageName = 'page', $page = null): LengthAwarePaginator

@@ -106,7 +106,7 @@
                 wire:key="table-summary-row-{{ $this->getKey($summaryRow) }}"
                 :class="$index % 2 === 0 ? 'bg-gray-200' : 'bg-gray-300'"
             >
-                <x-dynamic-component :component="$rowView" :row="$summaryRow" :index="$index"/>
+                <x-dynamic-component :component="$summaryRowView" :row="$summaryRow" :index="$index"/>
 
             </x-livewire-tables::table.row>
         @empty
