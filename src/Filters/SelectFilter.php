@@ -67,7 +67,7 @@ class SelectFilter extends Filter
     {
         $option =collect($this->options())->where($this->optionValue,'=',$value)->first();
         if ($option) {
-            return $this->label;
+            return $option->label;
         } else {
             return $value;
         }
