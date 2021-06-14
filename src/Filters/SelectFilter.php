@@ -67,7 +67,7 @@ class SelectFilter extends Filter
     {
         $option =collect($this->options())->where($this->optionValue,'=',$value)->first();
         if ($option) {
-            return [$this->optionLabel];
+            return $this->label;
         } else {
             return $value;
         }
@@ -76,5 +76,10 @@ class SelectFilter extends Filter
     public function allowedValue($raw): bool
     {
         return collect($this->options())->where($this->optionValue, '=', $raw)->count() > 0;
+    }
+
+    public function formatPill($value): string
+    {
+        return $this->getOptionLabel($value);
     }
 }

@@ -25,6 +25,16 @@ class MultipleSelectFilter extends Filter
         return $this;
     }
 
+    public function getOptionLabel($value)
+    {
+        $option =collect($this->options())->where($this->optionValue,'=',$value)->first();
+        if ($option) {
+            return $this->label;
+        } else {
+            return $value;
+        }
+    }
+
     /**
      * @return array
      */
@@ -41,5 +51,10 @@ class MultipleSelectFilter extends Filter
     public function allowedValue($raw): bool
     {
         return true;
+    }
+
+    public function formatPill($value): string
+    {
+        return $this->getOptionLabel($value);
     }
 }

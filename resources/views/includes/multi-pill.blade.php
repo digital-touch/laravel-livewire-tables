@@ -1,9 +1,9 @@
 @php($filter = $this->filter($filterId))
-@php($title = $filter->getOptionLabel($valueItem))
+
 <span wire:key="filter-{{$filterId}}-{{ $valueItem }}"
       class="inline-flex items-center py-0.5 pl-2 pr-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-700">
 
-    {{ $filter->label() ?? ucwords(strtr($filterId, ['_' => ' ', '-' => ' '])) }}: {{ $filter->formatPill($title) }}
+    {{ $filter->label() }}: {{ $filter->formatPill($valueItem) }}
 
     <button title="Usuń"
         wire:click="removeFilter('{{$filterId}}','{{$valueItem}}')"
