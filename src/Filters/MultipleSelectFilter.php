@@ -28,8 +28,10 @@ class MultipleSelectFilter extends Filter
     public function getOptionLabel($value)
     {
         $option =collect($this->options())->where($this->optionValue,'=',$value)->first();
-        if ($option) {
+        if ($option != null && is_object($option)) {
             return $option->label;
+        } else if ($option != null && (is_array($option))) {
+            return $option['label'];
         } else {
             return $value;
         }
