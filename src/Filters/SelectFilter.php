@@ -19,7 +19,7 @@ class SelectFilter extends Filter
      * @param string $component
      * @return SelectFilter
      */
-    public static function make(string $name, string $component = 'livewire-tables::includes.filters.select-filter'): SelectFilter
+        public static function make(string $name, string $component = 'livewire-tables::includes.filters.select-filter'): SelectFilter
     {
         return new static($name, $component, self::STRING_VALUE_TYPE);
     }

@@ -12,6 +12,8 @@
 
             @elseif (is_array($filterValue) && count($filterValue))
 
+
+
                 @foreach($filterValue as $valueItem)
 
                     @include('livewire-tables::includes.multi-pill')
