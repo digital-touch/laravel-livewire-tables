@@ -61,8 +61,8 @@
                 </x-livewire-tables::table.cell>
             </x-livewire-tables::table.row>
         @endif
-
-        @forelse ($rows as $index => $row)
+        @php($index = 0)
+        @forelse ($rows as $row)
             <x-livewire-tables::table.row
                 wire:loading.class.delay="opacity-50"
                 wire:key="table-row-{{ $this->getKey($row) }}"
@@ -84,6 +84,7 @@
 
                 <x-dynamic-component :component="$rowView" :row="$row" :index="$index" :rows="$rows"/>
 
+                @php($index++)
             </x-livewire-tables::table.row>
         @empty
             <x-livewire-tables::table.row>
