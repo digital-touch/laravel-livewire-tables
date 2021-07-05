@@ -160,7 +160,7 @@ abstract class DataTableComponent extends Component
             }
         } else {
             if ($this->paginationEnabled) {
-                return $this->paginateCollection($this->collection(), $this->perPage, $this->columns(), $this->pageName, $this->page);
+                return $this->paginateCollection($this->collection(), $this->perPage, $this->pageName, $this->page);
             } else {
                 return $this->collection();
             }
@@ -234,18 +234,14 @@ abstract class DataTableComponent extends Component
         return $summaryRow->getKey();
     }
 
-    public function paginateCollection(Collection $results, $perPage = 15, $columns = [], $pageName = 'page', $page = null): LengthAwarePaginator
+    public function paginateCollection(Collection $results, $perPage = 15, $pageName = 'page', $page = null): LengthAwarePaginator
     {
         $page = $page ?: Paginator::resolveCurrentPage($pageName);
 
         $total = $results->count();
 
-        if (count($columns)) {
-            $results = $total ? $this->forPage($results, $page, $perPage)->only($columns) : collect();
-        } else {
-            $results = $total ? $this->forPage($results, $page, $perPage) : collect();
-        }
-
+        $results = $total ? $this->forPage($results, $page, $perPage) : collect();
+       
         return $this->collectionPaginator($results, $total, $perPage, $page, [
             'path' => Paginator::resolveCurrentPath(),
             'pageName' => $pageName,
