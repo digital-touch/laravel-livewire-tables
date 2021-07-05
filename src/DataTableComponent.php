@@ -160,7 +160,7 @@ abstract class DataTableComponent extends Component
             }
         } else {
             if ($this->paginationEnabled) {
-                return $this->paginateCollection($this->collection());
+                return $this->paginateCollection($this->collection(), $this->perPage);
             } else {
                 return $this->collection();
             }
@@ -173,7 +173,6 @@ abstract class DataTableComponent extends Component
     public function resetAll(): void
     {
         $this->resetFilters();
-        $this->resetSearch();
         $this->resetSorts();
         $this->resetBulk();
         $this->resetPage();
