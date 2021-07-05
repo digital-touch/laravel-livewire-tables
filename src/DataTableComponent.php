@@ -160,7 +160,8 @@ abstract class DataTableComponent extends Component
             }
         } else {
             if ($this->paginationEnabled) {
-                return $this->paginateCollection($this->collection(), $this->perPage, $this->pageName, $this->{$this->pageName});
+                $paginated = $this->paginateCollection($this->collection(), $this->perPage, $this->pageName, $this->{$this->pageName});
+                return collect($paginated->values());
             } else {
                 return $this->collection();
             }
