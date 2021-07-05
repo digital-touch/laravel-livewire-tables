@@ -241,7 +241,7 @@ abstract class DataTableComponent extends Component
         $total = $results->count();
 
         $results = $total ? $this->forPage($results, $page, $perPage) : collect();
-       
+
         return $this->collectionPaginator($results, $total, $perPage, $page, [
             'path' => Paginator::resolveCurrentPath(),
             'pageName' => $pageName,
