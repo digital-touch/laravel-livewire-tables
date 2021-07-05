@@ -1,7 +1,7 @@
 <x-input
     id="{{$filterId}}_filter"
     label="{{$filter->label()}}"
-    wire:model.debounce.150ms="filters.{{ $filterId }}"
+    wire:model.debounce.350ms="filters.{{ $filterId }}"
     placeholder="Wpisz..."
     type="text"
     class="w-64 shadow-sm border-cool-gray-300 block transition duration-150 ease-in-out sm:text-sm sm:leading-5 focus:outline-none focus:border-indigo-300 focus:shadow-outline-indigo @if (isset($filters['search']) && strlen($filters['search'])) rounded-none rounded-l-md @else rounded-md @endif"
